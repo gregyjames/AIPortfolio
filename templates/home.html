@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    {% extends "template.html" %}
+    {% block content %}
+        <h2>
+            Tickers
+            <small class="text-muted">Enter the tickers for your portfolio here</small>
+        </h2>
+        <ul id="list"></ul>
+        <form action = "/" method = "post">
+            <input type="text" id="candidate" />
+            <button onclick="addItem()" class="buttonClass" type="button">Add item</button>
+            <button onclick="removeItem()" class="buttonClass" type="button">Remove item</button>
+            <br>
+            <br>
+            <button onclick="generate()" class="buttonClass" type="button" href="/portfolio">Generate Portfolios</button>
+        </form>
+
+        <script>
+            function addItem() {
+                var a = document.getElementById("list");
+                var candidate = document.getElementById("candidate");
+                var li = document.createElement("li");
+                li.setAttribute('id', candidate.value);
+                li.appendChild(document.createTextNode(candidate.value));
+                a.appendChild(li);
+            }
+      
+            // Creating a function to remove item from list
+            function removeItem() {
+      
+                // Declaring a varible to get select element
+                var a = document.getElementById("list");
+                var candidate = document.getElementById("candidate");
+                var item = document.getElementById(candidate.value);
+                a.removeChild(item);
+            }
+
+            function generate(){
+                Tlist = []
+                var ul = document.getElementById("list");
+                var items = ul.getElementsByTagName("li");
+                for(var i = 0; i < items.length; i++){
+                    Tlist.push(items[i].innerText)
+                }
+                console.log(Tlist)
+                $.ajax({
+                    url: '/',
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    success:window.location.replace("/portfolio"),
+                    data: JSON.stringify(Tlist),   // converts js value to JSON string
+                    dataType: "json"
+                })
+            }
+        </script>
+    {% endblock %}
+  </body>
+</html>
