@@ -1,5 +1,5 @@
 # AIPortfolio
-Use AI to generate a optimized stock portfolio
+Use AI, Modern Portfolio Theory, and a Monte Carlo simulation to generate a optimized stock portfolio that minimizes risk while maximizing returns.
 
 
 ## How does it work?
