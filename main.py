@@ -1,12 +1,14 @@
-from flask import Flask, request, render_template, redirect, url_for, session
+from flask import Flask, request, render_template, redirect, url_for, session, send_file
 import numpy as np
 import yfinance as yf
 import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.optimize as optimization
 import json
+import io
 
 app = Flask(__name__)
+
 # on average there are 252 trading days in a year
 NUM_TRADING_DAYS = 252
 # we will generate random w (different portfolios)
@@ -24,10 +26,34 @@ def download_data(stocks, start_date,end_date):
     return pd.DataFrame(stock_data)
 
 
-def show_data(data):
-    data.plot(figsize=(10, 5))
-    plt.show()
+@app.route('/plot.png', methods=['GET'])
+def show_data():
+    dataset.plot(figsize=(10, 5))
+    bytes_image = io.BytesIO()
+    plt.savefig(bytes_image, format='png')
+    bytes_image.seek(0)
 
+    return send_file(bytes_image,
+                     attachment_filename='plot.png',
+                     mimetype='image/png')
+
+@app.route('/portfolio.png', methods=['GET'])
+def show_optimal_portfolio():
+    bytes_image = io.BytesIO()
+    plt.figure(figsize=(10, 6))
+    plt.scatter(risks, means, c=means / risks, marker='o')
+    plt.grid(True)
+    plt.xlabel('Expected Volatility')
+    plt.ylabel('Expected Return')
+    plt.colorbar(label='Sharpe Ratio')
+    plt.plot(statistics(optimum['x'], log_daily_returns)[1], statistics(optimum['x'], log_daily_returns)[0], 'g*', markersize=20.0)
+    plt.savefig(bytes_image, format='png')
+    bytes_image.seek(0)
+
+    bytes_obj = bytes_image;
+    return send_file(bytes_obj,
+                     attachment_filename='portfolio.png',
+                     mimetype='image/png')
 
 def calculate_return(data):
     # NORMALIZATION - to measure all variables in comparable metric
@@ -113,13 +139,20 @@ def portfolio():
     start_date = '2011-01-01'
     end_date = '2020-01-30'
     
+    global dataset
     dataset = download_data(stocks,start_date,end_date)
     #show_data(dataset)
+    global log_daily_returns
     log_daily_returns = calculate_return(dataset)
     # show_statistics(log_daily_returns)
 
+    global pweights
+    global means
+    global risks
+
     pweights, means, risks = generate_portfolios(log_daily_returns)
     #show_portfolios(means, risks)
+    global optimum
     optimum = optimize_portfolio(pweights, log_daily_returns)
     weights, facts = print_optimal_portfolio(optimum, log_daily_returns)
 
