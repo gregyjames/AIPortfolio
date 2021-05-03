@@ -3,7 +3,7 @@ Use AI, Modern Portfolio Theory, and a Monte Carlo simulation to generate a opti
 
 
 ## How does it work?
-The app works by pulling the stock close data from the yahoo finance api. We then calculate the log returns and the volitility of the data to see what the overall data for the market looks like. We then generate random portfolio weights and use scipy to maximize a function that calculates the the best portfolio weights for a portfolio with a maximum return to volitility ration (this is known as the sharpe ratio). This is effectivly a monte carlo simulation.
+The app works by pulling the stock close data from the yahoo finance api. We then calculate the log returns and the volitility of the data to see what the overall data for the market looks like. We then generate random portfolio weights and use scipy to maximize a function that calculates the the best portfolio weights for a portfolio with a maximum return to volitility ration (this is known as the sharpe ratio). This is effectivly a monte carlo simulation to find the optimal stock portfolio.
 
 
 ## Resources and Readings
@@ -37,3 +37,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## DISCLAIMER
+This project and it's generated portfolios are NOT investment advice. This is purly educational.
