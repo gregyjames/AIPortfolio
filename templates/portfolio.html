@@ -6,15 +6,17 @@
   <body>
     {% extends "template.html" %}
     {% block content %}
+    
+    <!-- The data of the optimal portfolio generated in python-->
     <h3>Stocks: {{data}}</h3>
     <h3>Weight: {{weights}}</h3>
     <h3>Returns: {{returns}}</h3>
     <h3>Volatility: {{vol}}</h3>
     <h3>Sharpe Ratio: {{sharpe}}</h3>
-
+    <!-- The dynamic returns of the stocks plot generated in python-->
     <h4>Returns</h4>
     <img src="/plot.png">
-
+    <!-- The dynanic efficient frontier plot generated in python-->
     <h4>Portfolio Returns</h4>
     <img src="/portfolio.png">
     {% endblock %}

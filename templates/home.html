@@ -13,14 +13,18 @@
         <ul id="list"></ul>
         <form action = "/" method = "post">
             <input type="text" id="candidate" />
+            <!--Adds stock in text box to the UL-->
             <button onclick="addItem()" class="buttonClass" type="button">Add item</button>
+            <!--Removes the last stock in the UL-->
             <button onclick="removeItem()" class="buttonClass" type="button">Remove item</button>
             <br>
             <br>
+            <!--Post the data and generate the portfolios on the portfolio template -->
             <button onclick="generate()" class="buttonClass" type="button" href="/portfolio">Generate Portfolios</button>
         </form>
 
         <script>
+            //Add item function
             function addItem() {
                 var a = document.getElementById("list");
                 var candidate = document.getElementById("candidate");
@@ -41,20 +45,23 @@
             }
 
             function generate(){
+                // List to hold the stocks
                 Tlist = []
                 var ul = document.getElementById("list");
                 var items = ul.getElementsByTagName("li");
+                // get the inner text (stock tickers) from the UL and save it to the array
                 for(var i = 0; i < items.length; i++){
                     Tlist.push(items[i].innerText)
                 }
                 console.log(Tlist)
+                // Ajax post request to python the python function in flask
                 $.ajax({
                     url: '/',
-                    type: 'POST',
-                    contentType: "application/json; charset=utf-8",
-                    success:window.location.replace("/portfolio"),
-                    data: JSON.stringify(Tlist),   // converts js value to JSON string
-                    dataType: "json"
+                    type: 'POST', // We are making a post request
+                    contentType: "application/json; charset=utf-8", // type of the request is json
+                    success:window.location.replace("/portfolio"), // go to the portfolio page on success
+                    data: JSON.stringify(Tlist),   // converts js value to JSON string as the data for our request
+                    dataType: "json" // sending Json data
                 })
             }
         </script>
