@@ -13,6 +13,7 @@ The app works by pulling the stock close data from the yahoo finance api. We the
 - [Efficient Frontier](https://www.investopedia.com/terms/e/efficientfrontier.asp)
 - [Markowitz Modern Portfolio Theory](https://www.investopedia.com/terms/m/modernportfoliotheory.asp)
 - [Monte Carlo Simulation](https://www.investopedia.com/terms/m/montecarlosimulation.asp)
+- [Volatility](https://www.investopedia.com/terms/v/volatility.asp)
 
 
 ## License
