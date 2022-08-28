@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import scipy.optimize as optimization
 import json
 import io
+import os
 
 app = Flask(__name__)
 
