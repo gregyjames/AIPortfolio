@@ -173,9 +173,10 @@ def portfolio():
     start_date = '2011-01-01'
     end_date = date.today().strftime("%Y-%m-%d")
     
-    #download the dataset and make it a global variable
     global dataset
-    dataset = download_data(stocks,start_date,end_date)
+    #download the dataset and make it a global variable
+    if stocks is not None:
+        dataset = download_data(stocks,start_date,end_date)
 
     if dataset.empty == False:
         #calculate the log returns and make it a global variable
