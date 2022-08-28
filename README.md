@@ -4,6 +4,9 @@
 Use AI, Modern Portfolio Theory, and Monte Carlo simulation's to generate a optimized stock portfolio that minimizes risk while maximizing returns.
 
 
+[TRY HERE](https://ancient-headland-77389.herokuapp.com/)
+
+
 ## How does it work?
 The app works by pulling the stock close data from the yahoo finance api. We then calculate the log returns and the volatility of the data to see what the overall trend for the stocks look like. We then generate random portfolio weights and use scipy to maximize a function that calculates the best portfolio weights for a portfolio with a maximum return to volatility ration (this is known as the [Sharpe ratio](https://en.wikipedia.org/wiki/Sharpe_ratio)). This is effectively a Monte Carlo simulation to find the optimal stock portfolio.
 
