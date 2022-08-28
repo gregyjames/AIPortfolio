@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for, session, send_file
+from flask import Flask, request, render_template, redirect, url_for, g, send_file
 import numpy as np
 import yfinance as yf
 import pandas as pd
@@ -50,14 +50,14 @@ def show_data():
     bytes_image.seek(0)
 
     #send the file to flask
-    return send_file(bytes_image,mimetype='image/png', max_age=0, as_attachment=True)
+    return send_file(bytes_image.getvalue(),mimetype='image/png', max_age=0, as_attachment=True)
 
 #dynamically generate the efficient frontier plot to flask
 @app.route('/portfolio.png', methods=['GET'])
 def show_optimal_portfolio():
     bytes_image = io.BytesIO()
     plt.figure(figsize=(10, 6))
-    plt.scatter(risks, means, c=means / risks, marker='o')
+    plt.scatter(g.risks, g.means, c=g.means / g.risks, marker='o')
     plt.grid(True)
     plt.xlabel('Expected Volatility')
     plt.ylabel('Expected Return')
@@ -68,7 +68,7 @@ def show_optimal_portfolio():
 
     #send the dynamic file to flash
     bytes_obj = bytes_image;
-    return send_file(bytes_obj,mimetype='image/png', max_age=0)
+    return send_file(bytes_obj.getvalue(), mimetype='image/png', max_age=0, as_attachment=True)
 
 #Log distribution is assumed for computational finance
 def calculate_return(data):
@@ -185,11 +185,11 @@ def portfolio():
         # show_statistics(log_daily_returns)
 
         #Calculate the weights, returns and vol of all the portfolios and make them global
-        #global pweights
-        #global means
-        #global risks
-
         pweights, means, risks = generate_portfolios(log_daily_returns)
+
+        g.pweights = pweights
+        g.means = means
+        g.risks = risks
 
         # find and print the optimal portfolio weights
         global optimum
