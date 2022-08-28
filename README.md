@@ -1,3 +1,5 @@
+[![Python application](https://github.com/gregyjames/AIPortfolio/actions/workflows/python-app.yml/badge.svg?branch=main)](https://github.com/gregyjames/AIPortfolio/actions/workflows/python-app.yml)
+
 ![Logo](https://i.imgur.com/955FRvs.png)
 Use AI, Modern Portfolio Theory, and Monte Carlo simulation's to generate a optimized stock portfolio that minimizes risk while maximizing returns.
 
