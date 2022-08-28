@@ -7,8 +7,21 @@ import scipy.optimize as optimization
 import json
 import io
 import os
+from common import cache
+from datetime import date
 
 app = Flask(__name__)
+cache.init_app(app=app, config={"CACHE_TYPE": "simple"})
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
+# No caching at all for API endpoints.
+@app.after_request
+def add_header(response):
+    # response.cache_control.no_store = True
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '-1'
+    return response
 
 # on average there are 252 trading days in a year
 NUM_TRADING_DAYS = 252
@@ -37,9 +50,7 @@ def show_data():
     bytes_image.seek(0)
 
     #send the file to flask
-    return send_file(bytes_image,
-                     attachment_filename='plot.png',
-                     mimetype='image/png')
+    return send_file(bytes_image,mimetype='image/png', max_age=0, as_attachment=True)
 
 #dynamically generate the efficient frontier plot to flask
 @app.route('/portfolio.png', methods=['GET'])
@@ -57,9 +68,7 @@ def show_optimal_portfolio():
 
     #send the dynamic file to flash
     bytes_obj = bytes_image;
-    return send_file(bytes_obj,
-                     attachment_filename='portfolio.png',
-                     mimetype='image/png')
+    return send_file(bytes_obj,mimetype='image/png', max_age=0)
 
 #Log distribution is assumed for computational finance
 def calculate_return(data):
@@ -142,48 +151,54 @@ def home():
     #get the ajax post from jquery
     if request.method == 'POST':
         #store the users stocks as a flask session cookie
-        session['stocks'] = request.json
+        #session['stocks'] = request.json
         #if the stocks cookie is not empty find redirect to the portfolio template
-        if session['stocks'] != None:
-            return redirect("/portfolio")
+        cache.set("stocks", request.json)
+        return redirect("/portfolio")
     else:
         #render the home page on get request
         return render_template("home.html")
+
+dataset = pd.DataFrame()
 
 #route for portfolio page
 @app.route("/portfolio", methods=['GET'])
 def portfolio():
     #get the sessions stocks cookie and make it a global variable
     global stocks
-    stocks = session.get('stocks', None)
+    #stocks = session.get('stocks', None)
+    stocks = cache.get("stocks")
     print(stocks)
     # historical data - define START and END dates
     start_date = '2011-01-01'
-    end_date = '2020-01-30'
+    end_date = date.today().strftime("%Y-%m-%d")
     
     #download the dataset and make it a global variable
     global dataset
     dataset = download_data(stocks,start_date,end_date)
 
-    #calculate the log returns and make it a global variable
-    global log_daily_returns
-    log_daily_returns = calculate_return(dataset)
-    # show_statistics(log_daily_returns)
+    if dataset.empty == False:
+        #calculate the log returns and make it a global variable
+        global log_daily_returns
+        log_daily_returns = calculate_return(dataset)
+        # show_statistics(log_daily_returns)
 
-    #Calculate the weights, returns and vol of all the portfolios and make them global
-    global pweights
-    global means
-    global risks
+        #Calculate the weights, returns and vol of all the portfolios and make them global
+        #global pweights
+        #global means
+        #global risks
 
-    pweights, means, risks = generate_portfolios(log_daily_returns)
+        pweights, means, risks = generate_portfolios(log_daily_returns)
 
-    # find and print the optimal portfolio weights
-    global optimum
-    optimum = optimize_portfolio(pweights, log_daily_returns)
-    weights, facts = print_optimal_portfolio(optimum, log_daily_returns)
+        # find and print the optimal portfolio weights
+        global optimum
+        optimum = optimize_portfolio(pweights, log_daily_returns)
+        weights, facts = print_optimal_portfolio(optimum, log_daily_returns)
 
-    #render the portfolio template with the calcuated data
-    return render_template('portfolio.html', data=stocks, weights=weights, returns=facts[0], vol=facts[1], sharpe=facts[2])
+        #render the portfolio template with the calcuated data
+        return render_template('portfolio.html', data=stocks, weights=weights, returns=facts[0], vol=facts[1], sharpe=facts[2])
+    else:
+        return render_template('home.html')
 
 if __name__ == "__main__":
     app.secret_key = 'super secret key'
